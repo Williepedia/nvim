@@ -103,7 +103,7 @@ require('lazy').setup({
 
       -- Adds LSP completion capabilities
       'hrsh7th/cmp-nvim-lsp',
-      "hrsh7th/cmp-nvim-lsp-signature-help",
+      'hrsh7th/cmp-nvim-lsp-signature-help',
       -- Adds a number of user-friendly snippets
       'rafamadriz/friendly-snippets',
     },
@@ -151,7 +151,7 @@ require('lazy').setup({
   },
 
   {
-    -- Theme inspired by Atom
+    -- Theme inspired by Gruvbox
     'sainnhe/gruvbox-material',
     priority = 1000,
     config = function()
@@ -214,23 +214,66 @@ require('lazy').setup({
     },
     build = ':TSUpdate',
   },
-  { "folke/trouble.nvim",
- dependencies = { "nvim-tree/nvim-web-devicons" },
- opts = {
-  -- your configuration comes here
-  -- or leave it empty to use the default settings
-  -- refer to the configuration section below
- },
-{
-  "folke/todo-comments.nvim",
-  dependencies = { "nvim-lua/plenary.nvim" },
-  opts = {
-    -- your configuration comes here
-    -- or leave it empty to use the default settings
-    -- refer to the configuration section below
-  }
-}
-}
+  {
+    'folke/trouble.nvim',
+    dependencies = { 'nvim-tree/nvim-web-devicons' },
+    opts = {
+      -- your configuration comes here
+      -- or leave it empty to use the default settings
+      -- refer to the configuration section below
+    },
+  },
+  {
+    'folke/todo-comments.nvim',
+    dependencies = { 'nvim-lua/plenary.nvim' },
+    opts = {
+      -- your configuration comes here
+      -- or leave it empty to use the default settings
+      -- refer to the configuration section below
+    },
+  },
+  {
+    'akinsho/bufferline.nvim',
+    event = 'VeryLazy',
+    keys = {
+      { '<leader>bp', '<Cmd>BufferLineTogglePin<CR>', desc = 'Toggle pin' },
+      { '<leader>bP', '<Cmd>BufferLineGroupClose ungrouped<CR>', desc = 'Delete non-pinned buffers' },
+      { '<leader>bo', '<Cmd>BufferLineCloseOthers<CR>', desc = 'Delete other buffers' },
+      { '<leader>br', '<Cmd>BufferLineCloseRight<CR>', desc = 'Delete buffers to the right' },
+      { '<leader>bl', '<Cmd>BufferLineCloseLeft<CR>', desc = 'Delete buffers to the left' },
+      { '<S-h>', '<cmd>BufferLineCyclePrev<cr>', desc = 'Prev buffer' },
+      { '<S-l>', '<cmd>BufferLineCycleNext<cr>', desc = 'Next buffer' },
+      { '[b', '<cmd>BufferLineCyclePrev<cr>', desc = 'Prev buffer' },
+      { ']b', '<cmd>BufferLineCycleNext<cr>', desc = 'Next buffer' },
+    },
+  },
+  {
+    'kdheepak/lazygit.nvim',
+    event = 'VeryLazy',
+    dependencies = {
+      'nvim-lua/plenary.nvim',
+    },
+    keys = {
+      { '<leader>gg', '<Cmd>LazyGit<CR>', desc = 'LazyGit' },
+    },
+  },
+  {
+    'nvimtools/none-ls.nvim',
+    optional = true,
+    opts = function(_, opts)
+      local nls = require 'null-ls'
+      opts.sources = opts.sources or {}
+      table.insert(opts.sources, nls.builtins.formatting.black)
+    end,
+  },
+  {
+    'stevearc/conform.nvim',
+    opts = {
+      formatters_by_ft = {
+        ['python'] = { 'black' },
+      },
+    },
+  },
 
   -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
   --    You can use this folder to prevent any conflicts with this init.lua if you're interested in keeping
@@ -528,13 +571,12 @@ mason_lspconfig.setup_handlers {
 -- See `:help cmp`
 local cmp = require 'cmp'
 local luasnip = require 'luasnip'
-require("luasnip").filetype_extend("python", { "pydoc" })
+require('luasnip').filetype_extend('python', { 'pydoc' })
 require('luasnip.loaders.from_vscode').lazy_load()
 luasnip.config.setup {}
 
 -- vim.keymap.set({"i", "s"}, "<Tab>", function() luasnip.jump( 1) end, {silent = true})
 -- vim.keymap.set({"i", "s"}, "<S-Tab>", function() luasnip.jump(-1) end, {silent = true})
-
 
 cmp.setup {
   snippet = {
@@ -557,7 +599,32 @@ cmp.setup {
     { name = 'nvim_lsp' },
     { name = 'luasnip' },
     { name = 'nvim_lsp_signature_help' },
-  }
+  },
+}
+
+require('bufferline').setup {
+  options = {
+    diagnostics = 'nvim_lisp',
+    diagnostics_indicator = function(count, level)
+      local icon = level:match 'error' and ' ' or ''
+      return ' ' .. icon .. count
+    end,
+  },
+}
+
+require('conform').setup {
+  formatters_by_ft = {
+    lua = { 'stylua' },
+    -- Conform will run multiple formatters sequentially
+    python = { 'isort', 'black' },
+    -- Use a sub-list to run only the first available formatter
+    javascript = { { 'prettierd', 'prettier' } },
+  },
+  format_on_save = {
+    -- These options will be passed to conform.format()
+    timeout_ms = 500,
+    lsp_fallback = true,
+  },
 }
 --
 -- The line beneath this is called `modeline`. See `:help modeline`
