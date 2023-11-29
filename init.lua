@@ -27,25 +27,19 @@ Kickstart Guide:
 I have left several `:help X` comments throughout the init.lua
 You should run that command and read that help section for more information.
 
-In addition, I have some `NOTE:` items throughout the file.
-These are for you, the reader to help understand what is happening. Feel free to delete
-them once you know what you're doing, but they should serve as a guide for when you
-are first encountering a few different constructs in your nvim config.
-
-I hope you enjoy your Neovim journey,
-- TJ
-
 P.S. You can delete this when you're done too. It's your config now :)
 --]]
 -- Set <space> as the leader key
 -- See `:help mapleader`
 --  NOTE: Must happen before plugins are required (otherwise wrong leader will be used)
+
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
 -- Install package manager
 --    https://github.com/folke/lazy.nvim
 --    `:help lazy.nvim.txt` for more info
+
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
 if not vim.loop.fs_stat(lazypath) then
   vim.fn.system {
@@ -124,7 +118,7 @@ require('lazy').setup({
         changedelete = { text = '~' },
       },
       on_attach = function(bufnr)
-        vim.keymap.set('n', '<leader>hp', require('gitsigns').preview_hunk, { buffer = bufnr, desc = 'Preview git hunk' })
+        vim.keymap.set('n', '<leader>gp', require('gitsigns').preview_hunk, { buffer = bufnr, desc = 'Preview git hunk' })
 
         -- don't override the built-in and fugitive keymaps
         local gs = package.loaded.gitsigns
@@ -158,6 +152,7 @@ require('lazy').setup({
       vim.cmd.colorscheme 'gruvbox-material'
     end,
   },
+  { 'folke/tokyonight.nvim' },
 
   {
     -- Set lualine as statusline
@@ -274,7 +269,60 @@ require('lazy').setup({
       },
     },
   },
-
+  {
+    'nvim-telescope/telescope-file-browser.nvim',
+    dependencies = { 'nvim-telescope/telescope.nvim', 'nvim-lua/plenary.nvim' },
+  },
+  {
+    'Vimjas/vim-python-pep8-indent',
+  },
+  {
+    'akinsho/toggleterm.nvim',
+    version = '*',
+    config = function()
+      require('toggleterm').setup {
+        open_mapping = [[<c-/>]],
+        direction = 'float',
+      }
+    end,
+  },
+  {
+    'GCBallesteros/NotebookNavigator.nvim',
+    keys = {
+      {
+        ']h',
+        function()
+          require('notebook-navigator').move_cell 'd'
+        end,
+      },
+      {
+        '[h',
+        function()
+          require('notebook-navigator').move_cell 'u'
+        end,
+      },
+      { '<leader>X', "<cmd>lua require('notebook-navigator').run_cell()<cr>" },
+      { '<leader>x', "<cmd>lua require('notebook-navigator').run_and_move()<cr>" },
+    },
+    dependencies = {
+      'echasnovski/mini.comment',
+      'hkupty/iron.nvim', -- repl provider
+      'anuvyklack/hydra.nvim',
+    },
+    event = 'VeryLazy',
+    config = function()
+      local nn = require 'notebook-navigator'
+      nn.setup { activate_hydra_keys = '<leader>h' }
+    end,
+  },
+  { 'echasnovski/mini.nvim', version = false },
+  {
+    'quarto-dev/quarto-nvim',
+    'jmbuhr/otter.nvim',
+    'nvim-treesitter/nvim-treesitter',
+  },
+  { 'lervag/wiki.vim' },
+  -- INSTALL PLUGINS HERE ^^^
   -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
   --    You can use this folder to prevent any conflicts with this init.lua if you're interested in keeping
   --    up-to-date with whatever is in the kickstart repo.
@@ -331,7 +379,8 @@ vim.o.termguicolors = true
 -- Keymaps for better default experience
 -- See `:help vim.keymap.set()`
 vim.keymap.set({ 'n', 'v' }, '<Space>', '<Nop>', { silent = true })
-
+vim.keymap.set({ 't' }, '<S-Space>', '<Space>', { silent = true })
+vim.keymap.set({ 't' }, '<S-CR>', '<CR>', { silent = true })
 -- Remap for dealing with word wrap
 vim.keymap.set('n', 'k', "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })
 vim.keymap.set('n', 'j', "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })
@@ -358,14 +407,23 @@ require('telescope').setup {
       },
     },
   },
+  extensions = {
+    file_browser = {
+      hijack_netrw = true,
+      grouped = true,
+    },
+  },
 }
 
 -- Enable telescope fzf native, if installed
 pcall(require('telescope').load_extension, 'fzf')
 
+-- Enable telescope file_browser
+require('telescope').load_extension 'file_browser'
+
 -- See `:help telescope.builtin`
 vim.keymap.set('n', '<leader>?', require('telescope.builtin').oldfiles, { desc = '[?] Find recently opened files' })
-vim.keymap.set('n', '<leader><space>', require('telescope.builtin').buffers, { desc = '[ ] Find existing buffers' })
+-- vim.keymap.set('n', '<leader><space>', require('telescope.builtin').buffers, { desc = '[ ] Find existing buffers' })
 vim.keymap.set('n', '<leader>/', function()
   -- You can pass additional configuration to telescope to change theme, layout, etc.
   require('telescope.builtin').current_buffer_fuzzy_find(require('telescope.themes').get_dropdown {
@@ -375,7 +433,7 @@ vim.keymap.set('n', '<leader>/', function()
 end, { desc = '[/] Fuzzily search in current buffer' })
 
 vim.keymap.set('n', '<leader>gf', require('telescope.builtin').git_files, { desc = 'Search [G]it [F]iles' })
-vim.keymap.set('n', '<leader>sf', require('telescope.builtin').find_files, { desc = '[S]earch [F]iles' })
+vim.keymap.set('n', '<leader><space>', require('telescope.builtin').find_files, { desc = '[S]earch Files' })
 vim.keymap.set('n', '<leader>sh', require('telescope.builtin').help_tags, { desc = '[S]earch [H]elp' })
 vim.keymap.set('n', '<leader>sw', require('telescope.builtin').grep_string, { desc = '[S]earch current [W]ord' })
 vim.keymap.set('n', '<leader>sg', require('telescope.builtin').live_grep, { desc = '[S]earch by [G]rep' })
@@ -394,7 +452,7 @@ vim.defer_fn(function()
     auto_install = false,
 
     highlight = { enable = true },
-    indent = { enable = true },
+    indent = { enable = false },
     incremental_selection = {
       enable = true,
       keymaps = {
@@ -507,7 +565,6 @@ require('which-key').register {
   ['<leader>c'] = { name = '[C]ode', _ = 'which_key_ignore' },
   ['<leader>d'] = { name = '[D]ocument', _ = 'which_key_ignore' },
   ['<leader>g'] = { name = '[G]it', _ = 'which_key_ignore' },
-  ['<leader>h'] = { name = 'More git', _ = 'which_key_ignore' },
   ['<leader>r'] = { name = '[R]ename', _ = 'which_key_ignore' },
   ['<leader>s'] = { name = '[S]earch', _ = 'which_key_ignore' },
   ['<leader>w'] = { name = '[W]orkspace', _ = 'which_key_ignore' },
@@ -575,6 +632,7 @@ require('luasnip').filetype_extend('python', { 'pydoc' })
 require('luasnip.loaders.from_vscode').lazy_load()
 luasnip.config.setup {}
 
+-- This is originally intended to enable clean snippet jumping , but breaks the tab functionality
 -- vim.keymap.set({"i", "s"}, "<Tab>", function() luasnip.jump( 1) end, {silent = true})
 -- vim.keymap.set({"i", "s"}, "<S-Tab>", function() luasnip.jump(-1) end, {silent = true})
 
@@ -612,6 +670,7 @@ require('bufferline').setup {
   },
 }
 
+-- Autoformat on Save
 require('conform').setup {
   formatters_by_ft = {
     lua = { 'stylua' },
@@ -626,6 +685,19 @@ require('conform').setup {
     lsp_fallback = true,
   },
 }
---
+vim.keymap.set('v', '<Tab>', '>gv')
+
+require('mini.surround').setup {}
+
+vim.wo.foldenable = true
+vim.wo.foldmethod = 'expr'
+vim.wo.foldlevel = 20
+vim.wo.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
+
+-- Custom Keymap
+vim.keymap.set('n', '<S-Tab>', '<<')
+vim.keymap.set('i', '<S-Tab>', '<C-d>')
+vim.keymap.set('v', '<S-Tab>', '<gv')
+vim.g.wiki_root = '~/Documents/Notes'
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
