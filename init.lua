@@ -1,5 +1,4 @@
 --[[
-
 =====================================================================
 ==================== READ THIS BEFORE CONTINUING ====================
 =====================================================================
@@ -37,8 +36,6 @@ vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
 -- Install package manager
---    https://github.com/folke/lazy.nvim
---    `:help lazy.nvim.txt` for more info
 
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
 if not vim.loop.fs_stat(lazypath) then
@@ -51,6 +48,7 @@ if not vim.loop.fs_stat(lazypath) then
     lazypath,
   }
 end
+
 vim.opt.rtp:prepend(lazypath)
 
 -- NOTE: Here is where you install your plugins.
@@ -58,6 +56,7 @@ vim.opt.rtp:prepend(lazypath)
 --
 --  You can also configure plugins after the setup call,
 --    as they will be available in your neovim runtime.
+
 require('lazy').setup({
   -- NOTE: First, some plugins that don't require any configuration
 
@@ -87,24 +86,8 @@ require('lazy').setup({
     },
   },
 
-  {
-    -- Autocompletion
-    'hrsh7th/nvim-cmp',
-    dependencies = {
-      -- Snippet Engine & its associated nvim-cmp source
-      'L3MON4D3/LuaSnip',
-      'saadparwaiz1/cmp_luasnip',
-
-      -- Adds LSP completion capabilities
-      'hrsh7th/cmp-nvim-lsp',
-      'hrsh7th/cmp-nvim-lsp-signature-help',
-      -- Adds a number of user-friendly snippets
-      'rafamadriz/friendly-snippets',
-    },
-  },
-
   -- Useful plugin to show you pending keybinds.
-  { 'folke/which-key.nvim', opts = {} },
+  { 'folke/which-key.nvim',  opts = {} },
   {
     -- Adds git related signs to the gutter, as well as utilities for managing changes
     'lewis6991/gitsigns.nvim',
@@ -143,16 +126,6 @@ require('lazy').setup({
       end,
     },
   },
-
-  {
-    -- Theme inspired by Gruvbox
-    'sainnhe/gruvbox-material',
-    priority = 1000,
-    config = function()
-      vim.cmd.colorscheme 'gruvbox-material'
-    end,
-  },
-  { 'folke/tokyonight.nvim' },
 
   {
     -- Set lualine as statusline
@@ -210,118 +183,10 @@ require('lazy').setup({
     build = ':TSUpdate',
   },
   {
-    'folke/trouble.nvim',
-    dependencies = { 'nvim-tree/nvim-web-devicons' },
-    opts = {
-      -- your configuration comes here
-      -- or leave it empty to use the default settings
-      -- refer to the configuration section below
-    },
+    'stevearc/dressing.nvim',
+    opts = {},
   },
-  {
-    'folke/todo-comments.nvim',
-    dependencies = { 'nvim-lua/plenary.nvim' },
-    opts = {
-      -- your configuration comes here
-      -- or leave it empty to use the default settings
-      -- refer to the configuration section below
-    },
-  },
-  {
-    'akinsho/bufferline.nvim',
-    event = 'VeryLazy',
-    keys = {
-      { '<leader>bp', '<Cmd>BufferLineTogglePin<CR>', desc = 'Toggle pin' },
-      { '<leader>bP', '<Cmd>BufferLineGroupClose ungrouped<CR>', desc = 'Delete non-pinned buffers' },
-      { '<leader>bo', '<Cmd>BufferLineCloseOthers<CR>', desc = 'Delete other buffers' },
-      { '<leader>br', '<Cmd>BufferLineCloseRight<CR>', desc = 'Delete buffers to the right' },
-      { '<leader>bl', '<Cmd>BufferLineCloseLeft<CR>', desc = 'Delete buffers to the left' },
-      { '<S-h>', '<cmd>BufferLineCyclePrev<cr>', desc = 'Prev buffer' },
-      { '<S-l>', '<cmd>BufferLineCycleNext<cr>', desc = 'Next buffer' },
-      { '[b', '<cmd>BufferLineCyclePrev<cr>', desc = 'Prev buffer' },
-      { ']b', '<cmd>BufferLineCycleNext<cr>', desc = 'Next buffer' },
-    },
-  },
-  {
-    'kdheepak/lazygit.nvim',
-    event = 'VeryLazy',
-    dependencies = {
-      'nvim-lua/plenary.nvim',
-    },
-    keys = {
-      { '<leader>gg', '<Cmd>LazyGit<CR>', desc = 'LazyGit' },
-    },
-  },
-  {
-    'nvimtools/none-ls.nvim',
-    optional = true,
-    opts = function(_, opts)
-      local nls = require 'null-ls'
-      opts.sources = opts.sources or {}
-      table.insert(opts.sources, nls.builtins.formatting.black)
-    end,
-  },
-  {
-    'stevearc/conform.nvim',
-    opts = {
-      formatters_by_ft = {
-        ['python'] = { 'black' },
-      },
-    },
-  },
-  {
-    'nvim-telescope/telescope-file-browser.nvim',
-    dependencies = { 'nvim-telescope/telescope.nvim', 'nvim-lua/plenary.nvim' },
-  },
-  {
-    'Vimjas/vim-python-pep8-indent',
-  },
-  {
-    'akinsho/toggleterm.nvim',
-    version = '*',
-    config = function()
-      require('toggleterm').setup {
-        open_mapping = [[<c-/>]],
-        direction = 'float',
-      }
-    end,
-  },
-  {
-    'GCBallesteros/NotebookNavigator.nvim',
-    keys = {
-      {
-        ']h',
-        function()
-          require('notebook-navigator').move_cell 'd'
-        end,
-      },
-      {
-        '[h',
-        function()
-          require('notebook-navigator').move_cell 'u'
-        end,
-      },
-      { '<leader>X', "<cmd>lua require('notebook-navigator').run_cell()<cr>" },
-      { '<leader>x', "<cmd>lua require('notebook-navigator').run_and_move()<cr>" },
-    },
-    dependencies = {
-      'echasnovski/mini.comment',
-      'hkupty/iron.nvim', -- repl provider
-      'anuvyklack/hydra.nvim',
-    },
-    event = 'VeryLazy',
-    config = function()
-      local nn = require 'notebook-navigator'
-      nn.setup { activate_hydra_keys = '<leader>h' }
-    end,
-  },
-  { 'echasnovski/mini.nvim', version = false },
-  {
-    'quarto-dev/quarto-nvim',
-    'jmbuhr/otter.nvim',
-    'nvim-treesitter/nvim-treesitter',
-  },
-  { 'lervag/wiki.vim' },
+
   -- INSTALL PLUGINS HERE ^^^
   -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
   --    You can use this folder to prevent any conflicts with this init.lua if you're interested in keeping
@@ -329,7 +194,7 @@ require('lazy').setup({
   --    Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
   --
   --    For additional information see: https://github.com/folke/lazy.nvim#-structuring-your-plugins
-  -- { import = 'custom.plugins' },
+  { import = 'custom.plugins' },
 }, {})
 
 -- [[ Setting options ]]
@@ -337,7 +202,7 @@ require('lazy').setup({
 -- NOTE: You can change these options as you wish!
 
 -- Set highlight on search
-vim.o.hlsearch = false
+vim.o.hlsearch = true
 
 -- Make line numbers default
 vim.wo.number = true
@@ -374,19 +239,28 @@ vim.o.completeopt = 'menuone,noselect'
 -- NOTE: You should make sure your terminal supports this
 vim.o.termguicolors = true
 
+-- Treesitter Code Folding
+vim.wo.foldenable = true
+vim.wo.foldmethod = 'expr'
+vim.wo.foldlevel = 20
+vim.wo.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
+
 -- [[ Basic Keymaps ]]
 
 -- Keymaps for better default experience
 -- See `:help vim.keymap.set()`
+
 vim.keymap.set({ 'n', 'v' }, '<Space>', '<Nop>', { silent = true })
 vim.keymap.set({ 't' }, '<S-Space>', '<Space>', { silent = true })
 vim.keymap.set({ 't' }, '<S-CR>', '<CR>', { silent = true })
+--
 -- Remap for dealing with word wrap
 vim.keymap.set('n', 'k', "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })
 vim.keymap.set('n', 'j', "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })
 
 -- [[ Highlight on yank ]]
 -- See `:help vim.highlight.on_yank()`
+
 local highlight_group = vim.api.nvim_create_augroup('YankHighlight', { clear = true })
 vim.api.nvim_create_autocmd('TextYankPost', {
   callback = function()
@@ -450,7 +324,7 @@ vim.defer_fn(function()
 
     -- Autoinstall languages that are not installed. Defaults to false (but you can change for yourself!)
     auto_install = false,
-
+    additional_vim_regex_highlighting = false,
     highlight = { enable = true },
     indent = { enable = false },
     incremental_selection = {
@@ -474,6 +348,7 @@ vim.defer_fn(function()
           ['if'] = '@function.inner',
           ['ac'] = '@class.outer',
           ['ic'] = '@class.inner',
+          ['ib'] = '@block.inner',
         },
       },
       move = {
@@ -560,6 +435,14 @@ local on_attach = function(_, bufnr)
   end, { desc = 'Format current buffer with LSP' })
 end
 
+require('noice').setup({
+  -- Enable or disable the plugin
+  lsp = {
+    signature = {
+      enabled = false,
+    },
+  },
+})
 -- document existing key chains
 require('which-key').register {
   ['<leader>c'] = { name = '[C]ode', _ = 'which_key_ignore' },
@@ -605,8 +488,8 @@ require('neodev').setup()
 -- nvim-cmp supports additional completion capabilities, so broadcast that to servers
 local capabilities = vim.lsp.protocol.make_client_capabilities()
 capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
-
 -- Ensure the servers above are installed
+
 local mason_lspconfig = require 'mason-lspconfig'
 
 mason_lspconfig.setup {
@@ -616,7 +499,7 @@ mason_lspconfig.setup {
 mason_lspconfig.setup_handlers {
   function(server_name)
     require('lspconfig')[server_name].setup {
-      capabilities = capabilities,
+      -- capabilities = capabilities,
       on_attach = on_attach,
       settings = servers[server_name],
       filetypes = (servers[server_name] or {}).filetypes,
@@ -630,11 +513,19 @@ local cmp = require 'cmp'
 local luasnip = require 'luasnip'
 require('luasnip').filetype_extend('python', { 'pydoc' })
 require('luasnip.loaders.from_vscode').lazy_load()
-luasnip.config.setup {}
+luasnip.config.setup {
+  function()
+    require 'custom.snippets'
+  end,
+}
 
--- This is originally intended to enable clean snippet jumping , but breaks the tab functionality
--- vim.keymap.set({"i", "s"}, "<Tab>", function() luasnip.jump( 1) end, {silent = true})
--- vim.keymap.set({"i", "s"}, "<S-Tab>", function() luasnip.jump(-1) end, {silent = true})
+-- Add snippet jumping keybindings
+vim.keymap.set({ 'i', 's' }, '<C-j>', function()
+  luasnip.jump(1)
+end, { silent = true })
+vim.keymap.set({ 'i', 's' }, '<C-k>', function()
+  luasnip.jump(-1)
+end, { silent = true })
 
 cmp.setup {
   snippet = {
@@ -649,14 +540,14 @@ cmp.setup {
     ['<C-d>'] = cmp.mapping.scroll_docs(4),
     ['<C-Space>'] = cmp.mapping.complete {},
     ['<Tab>'] = cmp.mapping.confirm {
-      behavior = cmp.ConfirmBehavior.Replace,
-      select = true,
+      behavior = cmp.ConfirmBehavior.Insert,
+      select = false,
     },
   },
   sources = {
+    { name = 'path' },
     { name = 'nvim_lsp' },
     { name = 'luasnip' },
-    { name = 'nvim_lsp_signature_help' },
   },
 }
 
@@ -685,19 +576,139 @@ require('conform').setup {
     lsp_fallback = true,
   },
 }
-vim.keymap.set('v', '<Tab>', '>gv')
 
 require('mini.surround').setup {}
 
-vim.wo.foldenable = true
-vim.wo.foldmethod = 'expr'
-vim.wo.foldlevel = 20
-vim.wo.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
-
--- Custom Keymap
+-- Custom Keymap for Tab Indenting
 vim.keymap.set('n', '<S-Tab>', '<<')
 vim.keymap.set('i', '<S-Tab>', '<C-d>')
+
+vim.keymap.set('n', '<Tab>', '>>')
+vim.keymap.set('i', '<Tab>', '<C-i>')
+
+vim.keymap.set('v', '<Tab>', '>gv')
 vim.keymap.set('v', '<S-Tab>', '<gv')
+
 vim.g.wiki_root = '~/Documents/Notes'
+
+-- nvim-tree settings
+--
+-- disable netrw at the very start of your init.lua
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwPlugin = 1
+
+-- set termguicolors to enable highlight groups
+vim.opt.termguicolors = true
+
+-- empty setup using defaults
+-- OR setup with some options
+
+vim.keymap.set({ 'n', 'i', 'v', 'c' }, '<C-b>', '<Cmd>Neotree toggle<CR>')
+
+-- Configure `ruff-lsp`
+local configs = require 'lspconfig.configs'
+if not configs.ruff_lsp then
+  configs.ruff_lsp = {
+    default_config = {
+      cmd = { 'ruff-lsp' },
+      filetypes = { 'python' },
+      root_dir = require('lspconfig').util.find_git_ancestor,
+      init_options = {
+        settings = {
+          args = {},
+        },
+      },
+    },
+  }
+end
+
+require('lspconfig').ruff_lsp.setup {
+  on_attach = on_attach,
+}
+
+require('aerial').setup {
+  -- optionally use on_attach to set keymaps when aerial has attached to a buffer
+  on_attach = function(bufnr)
+    -- Jump forwards/backwards with '{' and '}'
+    vim.keymap.set('n', '<C-p>', '<cmd>AerialPrev<CR>', { buffer = bufnr })
+    vim.keymap.set('n', '<C-n>', '<cmd>AerialNext<CR>', { buffer = bufnr })
+  end,
+}
+-- You probably also want to set a keymap to toggle aerial
+vim.keymap.set('n', '<leader>o', '<cmd>AerialToggle!<CR>')
+
+require('quarto').setup {
+  debug = false,
+  closePreviewOnExit = true,
+  lspFeatures = {
+    enabled = true,
+    languages = { 'r', 'python', 'julia', 'bash' },
+    chunks = 'curly', -- 'curly' or 'all'
+    diagnostics = {
+      enabled = true,
+      triggers = { 'BufWritePost' },
+    },
+    completion = {
+      enabled = true,
+    },
+  },
+  codeRunner = {
+    enabled = true,
+    default_method = 'molten',          -- 'molten' or 'slime'
+    ft_runners = { python = 'molten' }, -- filetype to runner, ie. `{ python = "molten" }`.
+    -- Takes precedence over `default_method`
+    never_run = { 'yaml' },             -- filetypes which are never sent to a code runner
+  },
+  keymap = {
+    hover = 'K',
+    definition = 'gd',
+    rename = '<leader>lR',
+    references = 'gr',
+  },
+}
+
+-- default config
+-- require('image').setup {
+--   backend = 'kitty',
+--   integrations = {
+--     markdown = {
+--       enabled = true,
+--       clear_in_insert_mode = false,
+--       download_remote_images = true,
+--       only_render_image_at_cursor = false,
+--       filetypes = { 'markdown', 'vimwiki', 'quarto' }, -- markdown extensions (ie. quarto) can go here
+--     },
+--     neorg = {
+--       enabled = true,
+--       clear_in_insert_mode = false,
+--       download_remote_images = true,
+--       only_render_image_at_cursor = false,
+--       filetypes = { 'norg' },
+--     },
+--   },
+--   max_width = 100,
+--   max_height = 12,
+--   max_width_window_percentage = math.huge,
+--   max_height_window_percentage = math.huge,
+--   window_overlap_clear_enabled = true, -- toggles images when windows are overlapped
+--   window_overlap_clear_ft_ignore = { 'cmp_menu', 'cmp_docs', '' },
+--   editor_only_render_when_focused = false, -- auto show/hide images when the editor gains/looses focus
+--   tmux_show_only_in_active_window = false, -- auto show/hide images in the correct Tmux window (needs visual-activity off)
+--   hijack_file_patterns = { '*.png', '*.jpg', '*.jpeg', '*.gif', '*.webp' }, -- render image files as images when opened
+-- }
+
+vim.keymap.set({ 'n', 'i' }, '<C-CR>', '<cmd>QuartoSend<CR>')
+-- vim.g.gruvbox_material_transparent_background = 2
+vim.opt.conceallevel = 1
+
+-- Example for configuring Neovim to load user-installed installed Lua rocks:
+-- package.path = package.path .. ';' .. vim.fn.expand '$HOME' .. '/.luarocks/share/lua/5.1/?/init.lua;'
+-- package.path = package.path .. ';' .. vim.fn.expand '$HOME' .. '/.luarocks/share/lua/5.1/?.lua;'
+
+--
 -- The line beneath this is called `modeline`. See `:help modeline`
+-- Example for configuring Neovim to load user-installed installed Lua rocks:
+
+--
+--
 -- vim: ts=2 sts=2 sw=2 et
