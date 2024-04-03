@@ -9,4 +9,6 @@ return {
     end,
   },
   { 'folke/tokyonight.nvim' },
+  { 'marko-cerovac/material.nvim' },
+  { "romainl/Apprentice" },
 }

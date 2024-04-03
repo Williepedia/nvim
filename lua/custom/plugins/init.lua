@@ -17,7 +17,7 @@
 --   ['.mdown'] = 'markdown',
 -- }
 --
-vim.g.copilot_assume_mapped = true
+-- vim.g.copilot_assume_mapped = true
 vim.opt_local.conceallevel = 2
 
 vim.cmd 'set nowrap'
@@ -28,7 +28,7 @@ package.path = package.path .. ';' .. vim.fn.expand '$HOME' .. '/.luarocks/share
 
 return {
   -- 'vimwiki/vimwiki',
-  'github/copilot.vim',
+  -- 'github/copilot.vim',
   {
     'folke/todo-comments.nvim',
     dependencies = { 'nvim-lua/plenary.nvim' },
@@ -84,6 +84,15 @@ return {
       { '<S-l>',      '<cmd>BufferLineCycleNext<cr>',            desc = 'Next buffer' },
       { '[b',         '<cmd>BufferLineCyclePrev<cr>',            desc = 'Prev buffer' },
       { ']b',         '<cmd>BufferLineCycleNext<cr>',            desc = 'Next buffer' },
+    },
+    opts = {
+      options = {
+        diagnostics = 'nvim_lisp',
+        diagnostics_indicator = function(count, level)
+          local icon = level:match 'error' and ' ' or ''
+          return ' ' .. icon .. count
+        end,
+      }
     },
   },
   {

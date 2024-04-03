@@ -82,7 +82,7 @@ require('lazy').setup({
       { 'j-hui/fidget.nvim', tag = 'legacy', opts = {} },
 
       -- Additional lua configuration, makes nvim stuff amazing!
-      'folke/neodev.nvim',
+      { 'folke/neodev.nvim', opts = {} },
     },
   },
 
@@ -126,15 +126,14 @@ require('lazy').setup({
       end,
     },
   },
-
   {
     -- Set lualine as statusline
     'nvim-lualine/lualine.nvim',
     -- See `:help lualine.txt`
     opts = {
       options = {
-        icons_enabled = false,
-        theme = 'gruvbox-material',
+        icons_enabled = true,
+        -- theme = 'gruvbox-material',
         component_separators = '|',
         section_separators = '',
       },
@@ -388,7 +387,9 @@ end, 0)
 vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = 'Go to previous diagnostic message' })
 vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = 'Go to next diagnostic message' })
 vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { desc = 'Open floating diagnostic message' })
-vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostics list' })
+-- vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostics list' })
+vim.keymap.set('n', '<leader>q', function() require("trouble").toggle() end, { desc = 'Open diagnostics list' })
+
 
 -- [[ Configure LSP ]]
 --  This function gets run when an LSP connects to a particular buffer.
@@ -435,14 +436,6 @@ local on_attach = function(_, bufnr)
   end, { desc = 'Format current buffer with LSP' })
 end
 
-require('noice').setup({
-  -- Enable or disable the plugin
-  lsp = {
-    signature = {
-      enabled = false,
-    },
-  },
-})
 -- document existing key chains
 require('which-key').register {
   ['<leader>c'] = { name = '[C]ode', _ = 'which_key_ignore' },
@@ -483,11 +476,13 @@ local servers = {
 }
 
 -- Setup neovim lua configuration
-require('neodev').setup()
+-- require('neodev').setup()
 
 -- nvim-cmp supports additional completion capabilities, so broadcast that to servers
-local capabilities = vim.lsp.protocol.make_client_capabilities()
-capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
+
+-- local capabilities = vim.lsp.protocol.make_client_capabilities()
+-- capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
+--
 -- Ensure the servers above are installed
 
 local mason_lspconfig = require 'mason-lspconfig'
@@ -551,15 +546,15 @@ cmp.setup {
   },
 }
 
-require('bufferline').setup {
-  options = {
-    diagnostics = 'nvim_lisp',
-    diagnostics_indicator = function(count, level)
-      local icon = level:match 'error' and ' ' or ''
-      return ' ' .. icon .. count
-    end,
-  },
-}
+-- require('bufferline').setup {
+--   options = {
+--     diagnostics = 'nvim_lisp',
+--     diagnostics_indicator = function(count, level)
+--       local icon = level:match 'error' and ' ' or ''
+--       return ' ' .. icon .. count
+--     end,
+--   },
+-- }
 
 -- Autoformat on Save
 require('conform').setup {
@@ -606,25 +601,25 @@ vim.opt.termguicolors = true
 vim.keymap.set({ 'n', 'i', 'v', 'c' }, '<C-b>', '<Cmd>Neotree toggle<CR>')
 
 -- Configure `ruff-lsp`
-local configs = require 'lspconfig.configs'
-if not configs.ruff_lsp then
-  configs.ruff_lsp = {
-    default_config = {
-      cmd = { 'ruff-lsp' },
-      filetypes = { 'python' },
-      root_dir = require('lspconfig').util.find_git_ancestor,
-      init_options = {
-        settings = {
-          args = {},
-        },
-      },
-    },
-  }
-end
+-- local configs = require 'lspconfig.configs'
+-- if not configs.ruff_lsp then
+--   configs.ruff_lsp = {
+--     default_config = {
+--       cmd = { 'ruff-lsp' },
+--       filetypes = { 'python' },
+--       root_dir = require('lspconfig').util.find_git_ancestor,
+--       init_options = {
+--         settings = {
+--           args = {},
+--         },
+--       },
+--     },
+--   }
+-- end
 
-require('lspconfig').ruff_lsp.setup {
-  on_attach = on_attach,
-}
+-- require('lspconfig').ruff_lsp.setup {
+--   on_attach = on_attach,
+-- }
 
 require('aerial').setup {
   -- optionally use on_attach to set keymaps when aerial has attached to a buffer
@@ -643,7 +638,7 @@ require('quarto').setup {
   lspFeatures = {
     enabled = true,
     languages = { 'r', 'python', 'julia', 'bash' },
-    chunks = 'curly', -- 'curly' or 'all'
+    chunks = 'all', -- 'curly' or 'all'
     diagnostics = {
       enabled = true,
       triggers = { 'BufWritePost' },
@@ -660,7 +655,7 @@ require('quarto').setup {
     never_run = { 'yaml' },             -- filetypes which are never sent to a code runner
   },
   keymap = {
-    hover = 'K',
+    -- hover = 'K',
     definition = 'gd',
     rename = '<leader>lR',
     references = 'gr',
@@ -700,7 +695,7 @@ require('quarto').setup {
 vim.keymap.set({ 'n', 'i' }, '<C-CR>', '<cmd>QuartoSend<CR>')
 -- vim.g.gruvbox_material_transparent_background = 2
 vim.opt.conceallevel = 1
-
+vim.cmd.colorscheme 'tokyonight'
 -- Example for configuring Neovim to load user-installed installed Lua rocks:
 -- package.path = package.path .. ';' .. vim.fn.expand '$HOME' .. '/.luarocks/share/lua/5.1/?/init.lua;'
 -- package.path = package.path .. ';' .. vim.fn.expand '$HOME' .. '/.luarocks/share/lua/5.1/?.lua;'
