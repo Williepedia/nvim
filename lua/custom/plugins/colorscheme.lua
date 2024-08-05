@@ -11,4 +11,6 @@ return {
   { 'folke/tokyonight.nvim' },
   { 'marko-cerovac/material.nvim' },
   { "romainl/Apprentice" },
+  { 'NLKNguyen/papercolor-theme' },
+  { "EdenEast/nightfox.nvim" }
 }

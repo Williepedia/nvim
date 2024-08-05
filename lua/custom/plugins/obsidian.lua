@@ -23,7 +23,9 @@ return {
         path = '~/Documents/Notes',
       },
     },
-
+    daily_notes = {
+      folder = 'diary'
+    }
     -- see below for full list of options 👇
   },
 }

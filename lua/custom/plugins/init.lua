@@ -3,32 +3,11 @@
 --
 -- See the kickstart.nvim README for more information
 
--- vim.g.vimwiki_list = {
---   {
---     path = '~/Documents/Notes/',
---     syntax = 'markdown',
---     ext = '.md',
---   },
--- }
---
--- vim.g.vimwiki_ext2syntax = {
---   ['.md'] = 'markdown',
---   ['.markdown'] = 'markdown',
---   ['.mdown'] = 'markdown',
--- }
---
--- vim.g.copilot_assume_mapped = true
 vim.opt_local.conceallevel = 2
 
 vim.cmd 'set nowrap'
 
--- Example for configuring Neovim to load user-installed installed Lua rocks:
-package.path = package.path .. ';' .. vim.fn.expand '$HOME' .. '/.luarocks/share/lua/5.1/?/init.lua;'
-package.path = package.path .. ';' .. vim.fn.expand '$HOME' .. '/.luarocks/share/lua/5.1/?.lua;'
-
 return {
-  -- 'vimwiki/vimwiki',
-  -- 'github/copilot.vim',
   {
     'folke/todo-comments.nvim',
     dependencies = { 'nvim-lua/plenary.nvim' },
@@ -37,6 +16,13 @@ return {
       -- or leave it empty to use the default settings
       -- refer to the configuration section below
     },
+  },
+  {
+    "L3MON4D3/LuaSnip",
+    -- follow latest release.
+    version = "v2.*", -- Replace <CurrentMajor> by the latest released major (first number of latest release)
+    -- install jsregexp (optional!).
+    build = "make install_jsregexp",
   },
   {
     'nvim-neo-tree/neo-tree.nvim',
@@ -124,41 +110,48 @@ return {
     version = '^1.0.0', -- use version <2.0.0 to avoid breaking changes
     build = ':UpdateRemotePlugins',
     ft = { 'python', 'markdown', 'quarto' },
-    -- dependencies = { '3rd/image.nvim' },
+    dependencies = { '3rd/image.nvim' },
     init = function()
-      vim.g.molten_virt_text_output = true
+      vim.g.molten_virt_text_output = false
       -- vim.g.molten_virt_lines_off_by_1 = true
-      -- vim.g.molten_image_provider = 'image.nvim'
-      vim.g.molten_auto_open_output = false
+      vim.g.molten_image_provider = 'image.nvim'
+      vim.g.molten_auto_open_output = true
       vim.g.molten_wrap_output = false
       vim.g.molten_use_border_highlight = true
       vim.g.molten_output_win_style = 'minimal'
-      vim.g.molten_virt_text_max_lines = 50
+      vim.g.molten_virt_text_max_lines = 1000
     end,
   },
-  -- {
-  --   '3rd/image.nvim',
-  --   integrations = {
-  --     markdown = {
-  --       enabled = true,
-  --       clear_in_insert_mode = false,
-  --       download_remote_images = true,
-  --       only_render_image_at_cursor = false,
-  --       filetypes = { 'markdown', 'vimwiki' }, -- markdown extensions (ie. quarto) can go here
-  --     },
-  --   },
-  --   opts = {
-  --     backend = 'kitty', -- Kitty will provide the best experience, but you need a compatible terminal
-  --     integrations = {}, -- do whatever you want with image.nvim's integrations
-  --     max_width = 100, -- tweak to preference
-  --     max_height = 12, -- ^
-  --     max_height_window_percentage = math.huge, -- this is necessary for a good experience
-  --     max_width_window_percentage = math.huge,
-  --     window_overlap_clear_enabled = true,
-  --     window_overlap_clear_ft_ignore = { 'cmp_menu', 'cmp_docs', '' },
-  --   },
-  --   version = '1.1.0',
-  -- },
+  {
+    "vhyrro/luarocks.nvim",
+    priority = 1001, -- this plugin needs to run before anything else
+    opts = {
+      rocks = { "magick" },
+    },
+  },
+  {
+    '3rd/image.nvim',
+    integrations = {
+      markdown = {
+        enabled = true,
+        clear_in_insert_mode = false,
+        download_remote_images = true,
+        only_render_image_at_cursor = false,
+        filetypes = { 'markdown', 'vimwiki' }, -- markdown extensions (ie. quarto) can go here
+      },
+    },
+    opts = {
+      backend = 'kitty',                        -- Kitty will provide the best experience, but you need a compatible terminal
+      integrations = {},                        -- do whatever you want with image.nvim's integrations
+      max_width = 100,                          -- tweak to preference
+      max_height = 12,                          -- ^
+      max_height_window_percentage = math.huge, -- this is necessary for a good experience
+      max_width_window_percentage = math.huge,
+      window_overlap_clear_enabled = true,
+      window_overlap_clear_ft_ignore = { 'cmp_menu', 'cmp_docs', '' },
+    },
+    version = '1.1.0',
+  },
   {
     'Vimjas/vim-python-pep8-indent',
   },
